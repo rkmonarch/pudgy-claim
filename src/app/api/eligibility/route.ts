@@ -36,15 +36,7 @@ export const POST = async (req: Request) => {
 
     const eligibilityData = (await eligibility.json()) as EligibilityResponse;
 
-    if (!eligibilityData.total) {
-      return NextResponse.json(
-        {
-          error:
-            "There is an error from the pengu server please try again later",
-        },
-        { status: 400 }
-      );
-    }
+    console.log("eligibilityData", eligibilityData);
 
     if (eligibilityData.totalUnclaimed === 0) {
       return NextResponse.json(
