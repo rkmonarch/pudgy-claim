@@ -46,6 +46,15 @@ export const POST = async (req: Request) => {
       );
     }
 
+    if (eligibilityData.totalUnclaimed === 0) {
+      return NextResponse.json(
+        {
+          error: "You are either not eligible or have already claimed",
+        },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
       {
         eligibility: eligibilityData,

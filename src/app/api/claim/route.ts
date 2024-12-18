@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import type { ClaimResponse } from "@/utils/types";
+import type { ClaimItem } from "@/utils/types";
 
 export const POST = async (req: Request) => {
   try {
@@ -34,12 +34,14 @@ export const POST = async (req: Request) => {
       );
     }
 
-    const claimData = (await response.json()) as ClaimResponse;
+    const claimData = (await response.json()) as ClaimItem[];
 
-    if (!claimData.claim || !Array.isArray(claimData.claim)) {
+    console.log("claimData", claimData);
+
+    if (!claimData) {
       return NextResponse.json(
         {
-          error: "Invalid claim data received",
+          error: "Invalid claim data received from the pengu server",
         },
         { status: 400 }
       );
