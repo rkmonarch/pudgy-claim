@@ -1,10 +1,19 @@
 import { NextResponse } from "next/server";
+import { EligibilityResponse } from "@/utils/types";
 
 export const POST = async (req: Request) => {
-  const body = await req.json();
-
   try {
+    const body = await req.json();
     const address = body.address;
+
+    if (!address) {
+      return NextResponse.json(
+        {
+          error: "Address is required",
+        },
+        { status: 400 }
+      );
+    }
 
     const eligibility = await fetch(
       `https://api.clusters.xyz/v0.1/airdrops/pengu/eligibility/${address}`,
@@ -16,9 +25,26 @@ export const POST = async (req: Request) => {
       }
     );
 
-    const eligibilityData = await eligibility.json();
+    if (!eligibility.ok) {
+      return NextResponse.json(
+        {
+          error: "Failed to fetch eligibility data",
+        },
+        { status: eligibility.status }
+      );
+    }
 
-    console.log("eligibilityData", eligibilityData);
+    const eligibilityData = (await eligibility.json()) as EligibilityResponse;
+
+    if (!eligibilityData.total) {
+      return NextResponse.json(
+        {
+          error:
+            "There is an error from the pengu server please try again later",
+        },
+        { status: 400 }
+      );
+    }
 
     return NextResponse.json(
       {
@@ -29,7 +55,7 @@ export const POST = async (req: Request) => {
   } catch (error) {
     console.error("error", error);
 
-    Response.json(
+    return NextResponse.json(
       {
         error: "There is an error from the pengu server please try again later",
       },
